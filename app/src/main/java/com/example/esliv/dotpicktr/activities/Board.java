@@ -1,9 +1,11 @@
 package com.example.esliv.dotpicktr.activities;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.example.esliv.dotpicktr.models.Grid;
 
 public class Board extends View {
     private Grid grid;
+    private int color;
 
     public Board(Context context) {
         super(context);
@@ -35,6 +38,7 @@ public class Board extends View {
 
     private void initBoard(){
         grid = Grid.get(17);
+        color = Color.parseColor("#CD5C5C");
     }
 
     private void drawRaster(Canvas canvas){
@@ -56,7 +60,6 @@ public class Board extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        drawRaster(canvas);
         for( int i = 0 ; i< grid.getGridSize();i++){
             for(int j =0; j < grid.getGridSize();j++){
                 if(grid.getDot(i,j).getColor() != -1 || grid.getDot(i,j).getColor() != -1 ) {
@@ -64,26 +67,32 @@ public class Board extends View {
                 }
             }
         }
+        drawRaster(canvas);
     }
 
 
     private void drawRect(Canvas canvas,int x,int y,int color){
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.parseColor("#CD5C5C"));
+        paint.setColor(color);
         int dotWidth = getWidth()/grid.getGridSize();
         canvas.drawRect(x*dotWidth , y*dotWidth, x*dotWidth+dotWidth, y*dotWidth+dotWidth, paint);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        String colorString = sharedPref.getString("color", "-1");
         int dotWidth = getWidth()/grid.getGridSize();
         int x =(int) Math.floor((event.getX()/dotWidth));
         int y= (int) Math.floor((event.getY()/dotWidth));
-        grid.setColor(x,y, 20);
+        grid.setColor(x,y, Integer.valueOf(colorString));
         invalidate();
         return true;
     }
+
+
+
 
 
 

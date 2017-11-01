@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.esliv.dotpicktr.activities.ColorPicker">
+
+    <SeekBar
+        android:id="@+id/seekBarR"
+        android:layout_width="226dp"
+        android:layout_height="22dp"
+        android:max="255"
+        app:layout_constraintLeft_toRightOf="@+id/textView4"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintRight_toLeftOf="@+id/numberR"
+        android:layout_marginRight="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="163dp"
+        app:layout_constraintHorizontal_bias="0.505" />
+
+    <SeekBar
+        android:id="@+id/seekBarG"
+        android:max="255"
+        android:layout_width="226dp"
+        android:layout_height="22dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="21dp"
+        app:layout_constraintLeft_toRightOf="@+id/textView5"
+        app:layout_constraintRight_toLeftOf="@+id/numberG"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarR" />
+
+    <SeekBar
+        android:id="@+id/seekBarB"
+        android:max="255"
+        android:layout_width="226dp"
+        android:layout_height="22dp"
+        app:layout_constraintLeft_toRightOf="@+id/textView"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintRight_toLeftOf="@+id/numberB"
+        android:layout_marginRight="8dp"
+        app:layout_constraintHorizontal_bias="0.505"
+        android:layout_marginTop="21dp"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarG"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/rgbView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="B"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        app:layout_constraintVertical_bias="0.062" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="G"
+        android:layout_marginTop="26dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/textView5" />
+
+    <TextView
+        android:layout_width="9dp"
+        android:layout_height="wrap_content"
+        android:text="R"
+        android:id="@+id/textView4"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="163dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/numberR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="163dp"
+        android:text="100"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/numberG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100"
+        android:layout_marginTop="26dp"
+        app:layout_constraintTop_toBottomOf="@+id/numberR"
+        android:layout_marginRight="16dp"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/numberB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="23dp"
+        android:text="100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/numberG"
+        app:layout_constraintVertical_bias="0.004" />
+
+    <TextView
+        android:id="@+id/rgbView"
+        android:layout_width="249dp"
+        android:layout_height="107dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteY="322dp"
+        app:layout_constraintHorizontal_bias="0.504" />
+
+    <Button
+        android:id="@+id/okBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="OK"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rgbView" />
+</android.support.constraint.ConstraintLayout>
