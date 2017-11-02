@@ -22,46 +22,36 @@ public class ColorPicker extends AppCompatActivity {
         setContentView(R.layout.activity_color);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String colorString = sharedPref.getString("color", "-1");
+        int colorCode = sharedPref.getInt("color", -1);
 
-
-        SeekBar seekBarR = (SeekBar) findViewById(R.id.seekBarR);
-        SeekBar seekBarG = (SeekBar) findViewById(R.id.seekBarG);
-        SeekBar seekBarB = (SeekBar) findViewById(R.id.seekBarB);
+        final SeekBar seekBarR = (SeekBar) findViewById(R.id.seekBarR);
+        final SeekBar seekBarG = (SeekBar) findViewById(R.id.seekBarG);
+        final SeekBar seekBarB = (SeekBar) findViewById(R.id.seekBarB);
 
         final TextView valueR = (TextView) findViewById(R.id.numberR);
         final TextView valueG = (TextView) findViewById(R.id.numberG);
         final TextView valueB = (TextView) findViewById(R.id.numberB);
         final TextView rgbValue = (TextView) findViewById(R.id.rgbView);
 
-        if(!colorString.equalsIgnoreCase("-1")){
-            rgbValue.setBackgroundColor(Integer.valueOf(colorString));
+        if (colorCode != -1) {
+            rgbValue.setBackgroundColor(colorCode);
+
+            seekBarR.setProgress(Color.red(colorCode));
+            valueR.setText(String.valueOf(Color.red(colorCode)));
+
+            seekBarG.setProgress(Color.green(colorCode));
+            valueG.setText(String.valueOf(Color.green(colorCode)));
+
+            seekBarB.setProgress(Color.blue(colorCode));
+            valueB.setText(String.valueOf(Color.blue(colorCode)));
         }
         seekBarR.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 valueR.setText(String.valueOf(i));
-                rgbValue.setBackgroundColor(Color.rgb( i,
+                rgbValue.setBackgroundColor(Color.rgb(i,
                         Integer.valueOf(valueG.getText().toString())
-                        ,Integer.valueOf(valueB.getText().toString())));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        seekBarB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                valueB.setText(String.valueOf(i));
-                rgbValue.setBackgroundColor(Color.rgb( Integer.valueOf(valueR.getText().toString()),
-                        i
-                        ,Integer.valueOf(valueB.getText().toString())));
+                        , Integer.valueOf(valueB.getText().toString())));
             }
 
             @Override
@@ -77,9 +67,9 @@ public class ColorPicker extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 valueG.setText(String.valueOf(i));
-                rgbValue.setBackgroundColor(Color.rgb( Integer.valueOf(valueR.getText().toString()),
-                        Integer.valueOf(valueB.getText().toString())
-                        ,i));
+                rgbValue.setBackgroundColor(Color.rgb(Integer.valueOf(valueR.getText().toString()),
+                        i
+                        , Integer.valueOf(valueB.getText().toString())));
             }
 
             @Override
@@ -91,17 +81,35 @@ public class ColorPicker extends AppCompatActivity {
             }
         });
 
-        Button button = (Button)findViewById(R.id.okBtn);
+        seekBarB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                valueB.setText(String.valueOf(i));
+                rgbValue.setBackgroundColor(Color.rgb(Integer.valueOf(valueR.getText().toString()),
+                        Integer.valueOf(valueG.getText().toString())
+                        , i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        Button button = (Button) findViewById(R.id.okBtn);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(view.getContext());
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("color", String.valueOf(Color.rgb(
-                        Integer.valueOf(valueR.getText().toString()),
-                        Integer.valueOf(valueG.getText().toString()),
-                        Integer.valueOf(valueB.getText().toString())
-                )));
+                editor.putInt("color", Color.rgb(
+                        seekBarR.getProgress(),
+                        seekBarG.getProgress(),
+                        seekBarB.getProgress())
+                );
 
                 editor.commit();
                 finish();

@@ -12,10 +12,10 @@ public class Dot {
     public Dot(){
         this(-1);
     }
+
     public Dot(int color){
         this.color=color;
     }
-
 
     public int getColor() {
         return color;

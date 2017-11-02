@@ -2,6 +2,7 @@ package com.example.esliv.dotpicktr.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,13 +14,19 @@ import com.example.esliv.dotpicktr.R;
 public class MainActivity extends AppCompatActivity {
 
     private Button colorBtn;
+    private Button drawMethodBtn;
+    private Button revertBtn;
+    protected boolean drawLine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        colorBtn = (Button)findViewById(R.id.colorBtn);
+        colorBtn = (Button) findViewById(R.id.colorBtn);
+        drawMethodBtn = (Button) findViewById(R.id.drawMethodBtn);
+        revertBtn = (Button) findViewById(R.id.revertBtn);
+
         colorBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -27,14 +34,31 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        drawMethodBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawLine = !drawLine;
+                drawMethodBtn.setText(drawLine ? "-" : ".");
+            }
+        });
+
+        //Clear sharedPreferences at when creating the activity
+        //set basis color to black
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.clear();
+        editor.putInt("color", Color.rgb(0, 0, 0));
+        editor.apply();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        //update the button after picking a new color
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String colorString = sharedPref.getString("color", "-1");
-        if(colorString != "-1")
-            colorBtn.setBackgroundColor(Integer.valueOf(colorString));
+        int colorCode = sharedPref.getInt("color", -1);
+        if (colorCode != -1)
+            colorBtn.setBackgroundColor(colorCode);
     }
 }

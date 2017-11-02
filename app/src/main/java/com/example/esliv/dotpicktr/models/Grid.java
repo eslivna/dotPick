@@ -52,7 +52,7 @@ public class Grid {
 
 
     /**
-     * Set the color for a certain tile
+     * Set the color for a certain dot
      *
      * @param x      the row index
      * @param y      the column index
