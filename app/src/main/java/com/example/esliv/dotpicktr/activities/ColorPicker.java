@@ -1,50 +1,47 @@
 package com.example.esliv.dotpicktr.activities;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.esliv.dotpicktr.R;
 
-public class ColorPicker extends AppCompatActivity {
+public class ColorPicker extends Fragment {
+    SeekBar seekBarR, seekBarB, seekBarG;
+    TextView valueR, valueG, valueB, rgbValue;
+    Button okBtn;
+    final static String ARG_COLOR = "color";
+    int currentColor = -1;
+
+    public interface OnColorPickerSelectedListener {
+        public void onColorSelected(int color);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_color);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        int colorCode = sharedPref.getInt("color", -1);
-
-        final SeekBar seekBarR = (SeekBar) findViewById(R.id.seekBarR);
-        final SeekBar seekBarG = (SeekBar) findViewById(R.id.seekBarG);
-        final SeekBar seekBarB = (SeekBar) findViewById(R.id.seekBarB);
-
-        final TextView valueR = (TextView) findViewById(R.id.numberR);
-        final TextView valueG = (TextView) findViewById(R.id.numberG);
-        final TextView valueB = (TextView) findViewById(R.id.numberB);
-        final TextView rgbValue = (TextView) findViewById(R.id.rgbView);
-
-        if (colorCode != -1) {
-            rgbValue.setBackgroundColor(colorCode);
-
-            seekBarR.setProgress(Color.red(colorCode));
-            valueR.setText(String.valueOf(Color.red(colorCode)));
-
-            seekBarG.setProgress(Color.green(colorCode));
-            valueG.setText(String.valueOf(Color.green(colorCode)));
-
-            seekBarB.setProgress(Color.blue(colorCode));
-            valueB.setText(String.valueOf(Color.blue(colorCode)));
+        if (savedInstanceState != null) {
+            currentColor = savedInstanceState.getInt(ARG_COLOR);
         }
+        View v = inflater.inflate(R.layout.activity_color, container, false);
+        seekBarR = v.findViewById(R.id.seekBarR);
+        seekBarB = v.findViewById(R.id.seekBarB);
+        seekBarG = v.findViewById(R.id.seekBarG);
+
+        valueR = v.findViewById(R.id.numberR);
+        valueG = v.findViewById(R.id.numberG);
+        valueB = v.findViewById(R.id.numberB);
+
+        rgbValue = v.findViewById(R.id.rgbView);
+
+        okBtn = v.findViewById(R.id.okBtn);
+
         seekBarR.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -99,23 +96,49 @@ public class ColorPicker extends AppCompatActivity {
             }
         });
 
-        Button button = (Button) findViewById(R.id.okBtn);
-        button.setOnClickListener(new View.OnClickListener() {
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(view.getContext());
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt("color", Color.rgb(
+                currentColor = Color.rgb(
                         seekBarR.getProgress(),
                         seekBarG.getProgress(),
                         seekBarB.getProgress())
-                );
+                ;
+                OnColorPickerSelectedListener mCallback = (OnColorPickerSelectedListener)getActivity();
+                mCallback.onColorSelected(currentColor);
 
-                editor.commit();
-                finish();
             }
         });
 
+
+        return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Bundle args = getArguments();
+        if (args != null) {
+            // Set article based on argument passed in
+            updateColor(args.getInt(ARG_COLOR));
+        } else if (currentColor != -1) {
+            // Set article based on saved instance state defined during onCreateView
+            updateColor(currentColor);
+        }
+    }
+
+    private void updateColor(int colorCode){
+        rgbValue.setBackgroundColor(colorCode);
+
+        seekBarR.setProgress(Color.red(colorCode));
+        valueR.setText(String.valueOf(Color.red(colorCode)));
+
+        seekBarG.setProgress(Color.green(colorCode));
+        valueG.setText(String.valueOf(Color.green(colorCode)));
+
+        seekBarB.setProgress(Color.blue(colorCode));
+        valueB.setText(String.valueOf(Color.blue(colorCode)));
     }
 
 }

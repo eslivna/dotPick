@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <com.example.esliv.dotpicktr.activities.Board xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/board"
+        android:layout_width="340dp"
+        android:layout_height="340dp"
+
+        android:layout_gravity="center" />
+
+</FrameLayout>

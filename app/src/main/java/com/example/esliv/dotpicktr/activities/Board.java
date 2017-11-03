@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,8 +18,9 @@ import com.example.esliv.dotpicktr.models.Grid;
  * Created by esliv on 23/10/2017.
  */
 
-public class Board extends View {
+public class Board extends View{
     private Grid grid;
+    private int activeColorCode= -1;
 
     public Board(Context context) {
         super(context);
@@ -93,14 +95,21 @@ public class Board extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-        int colorCode = sharedPref.getInt("color", -1);
+
         int dotWidth = getWidth() / grid.getGridSize();
         int x = (int) Math.floor((event.getX() / dotWidth));
         int y = (int) Math.floor((event.getY() / dotWidth));
-        grid.setColor(x, y, colorCode);
+        grid.setColor(x, y, activeColorCode);
         invalidate();
         return true;
+    }
+
+    public void setActiveColorCode(int color){
+        this.activeColorCode = color;
+    }
+
+    public int getActiveColorCode(){
+        return this.activeColorCode;
     }
 
 

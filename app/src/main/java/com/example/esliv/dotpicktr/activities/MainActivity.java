@@ -4,61 +4,75 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.esliv.dotpicktr.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity implements ToolBoxFragment.OnToolBoxSelectedListener, ColorPicker.OnColorPickerSelectedListener {
 
-    private Button colorBtn;
-    private Button drawMethodBtn;
-    private Button revertBtn;
-    protected boolean drawLine;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.game_view);
 
-        colorBtn = (Button) findViewById(R.id.colorBtn);
-        drawMethodBtn = (Button) findViewById(R.id.drawMethodBtn);
-        revertBtn = (Button) findViewById(R.id.revertBtn);
+        FragmentManager manager = getSupportFragmentManager();
 
-        colorBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ColorPicker.class);
-                startActivity(intent);
-            }
-        });
+        BoardFragment firstFragment = new BoardFragment();
+        ToolBoxFragment secondFragment = new ToolBoxFragment();
 
-        drawMethodBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawLine = !drawLine;
-                drawMethodBtn.setText(drawLine ? "-" : ".");
-            }
-        });
+        Bundle arg = new Bundle();
+        arg.putInt(BoardFragment.ARG_COLOR, Color.rgb(0,0,0));
+        firstFragment.setArguments(arg);
 
-        //Clear sharedPreferences at when creating the activity
-        //set basis color to black
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.clear();
-        editor.putInt("color", Color.rgb(0, 0, 0));
-        editor.apply();
+        Bundle args = new Bundle();
+        args.putInt(ToolBoxFragment.ARG_COLOR, Color.rgb(0,0,0));
+        secondFragment.setArguments(args);
+
+        manager.beginTransaction()
+                .add(R.id.fragment_container, firstFragment)
+                .add(R.id.fragment_container,secondFragment)
+                .commit();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        //update the button after picking a new color
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        int colorCode = sharedPref.getInt("color", -1);
-        if (colorCode != -1)
-            colorBtn.setBackgroundColor(colorCode);
+    public void onToolSelected(int color) {
+        ColorPicker colorPicker = new ColorPicker();
+
+        Bundle args = new Bundle();
+        args.putInt(ColorPicker.ARG_COLOR, color);
+        colorPicker.setArguments(args);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, colorPicker);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    @Override
+    public void onColorSelected(int color) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        BoardFragment boardFragment = new BoardFragment();
+        ToolBoxFragment toolBoxFragment = new ToolBoxFragment();
+
+        Bundle args = new Bundle();
+        args.putInt(ToolBoxFragment.ARG_COLOR, color);
+        toolBoxFragment.setArguments(args);
+
+        Bundle arg = new Bundle();
+        arg.putInt(BoardFragment.ARG_COLOR, color);
+        boardFragment.setArguments(arg);
+
+        transaction
+                .replace(R.id.fragment_container, boardFragment)
+                .add(R.id.fragment_container,toolBoxFragment)
+                .commit();
     }
 }
