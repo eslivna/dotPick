@@ -13,6 +13,8 @@ import android.view.View;
 
 import com.example.esliv.dotpicktr.models.Grid;
 
+import java.util.Arrays;
+
 
 /**
  * Created by esliv on 23/10/2017.
@@ -56,11 +58,11 @@ public class Board extends View{
         paint.setColor(Color.BLACK);
 
         //draw horizontal grid lines
-        for (int i = 0; i < getWidth() + 1; i += dotWidth) {
-            canvas.drawLine(0, i, getWidth(), i, paint);
+        for (int i = 0; i < gridHeight +1; i += dotWidth) {
+            canvas.drawLine(0, i, gridHeight, i, paint);
         }
         //draw vertical grid lines
-        for (int i = 0; i < gridHeight + 1; i += dotWidth) {
+        for (int i = 0; i < gridHeight +1; i += dotWidth) {
             canvas.drawLine(i, 0, i, gridHeight, paint);
         }
 
@@ -111,6 +113,8 @@ public class Board extends View{
     public int getActiveColorCode(){
         return this.activeColorCode;
     }
+
+
 
 
 }

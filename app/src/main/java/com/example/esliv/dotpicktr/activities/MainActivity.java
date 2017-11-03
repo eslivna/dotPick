@@ -35,9 +35,10 @@ public class MainActivity extends FragmentActivity implements ToolBoxFragment.On
         secondFragment.setArguments(args);
 
         manager.beginTransaction()
-                .add(R.id.fragment_container, firstFragment)
+                .replace(R.id.fragment_container, firstFragment)
                 .add(R.id.fragment_container,secondFragment)
                 .commit();
+
     }
 
     @Override
