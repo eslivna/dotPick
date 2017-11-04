@@ -33,7 +33,7 @@ public class BoardFragment extends Fragment {
         }
     }
 
-    private void updateColor(int color) {
+    public void updateColor(int color) {
         board.setActiveColorCode(color);
     }
 }

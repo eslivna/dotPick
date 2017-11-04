@@ -21,23 +21,33 @@ public class MainActivity extends FragmentActivity implements ToolBoxFragment.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_view);
 
-        FragmentManager manager = getSupportFragmentManager();
+        // Check whether the activity is using the layout version with
+        // the fragment_container FrameLayout. If so, we must add the first fragment
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) {
+                return;
+            }
+            FragmentManager manager = getSupportFragmentManager();
 
-        BoardFragment firstFragment = new BoardFragment();
-        ToolBoxFragment secondFragment = new ToolBoxFragment();
+            BoardFragment firstFragment = new BoardFragment();
+            ToolBoxFragment secondFragment = new ToolBoxFragment();
+            Bundle arg = new Bundle();
+            arg.putInt(BoardFragment.ARG_COLOR, Color.rgb(0,0,0));
+            firstFragment.setArguments(arg);
 
-        Bundle arg = new Bundle();
-        arg.putInt(BoardFragment.ARG_COLOR, Color.rgb(0,0,0));
-        firstFragment.setArguments(arg);
-
-        Bundle args = new Bundle();
-        args.putInt(ToolBoxFragment.ARG_COLOR, Color.rgb(0,0,0));
-        secondFragment.setArguments(args);
-
-        manager.beginTransaction()
-                .replace(R.id.fragment_container, firstFragment)
-                .add(R.id.fragment_container,secondFragment)
-                .commit();
+            Bundle args = new Bundle();
+            args.putInt(ToolBoxFragment.ARG_COLOR, Color.rgb(0,0,0));
+            secondFragment.setArguments(args);
+            manager.beginTransaction()
+                    .replace(R.id.fragment_container, firstFragment)
+                    .add(R.id.fragment_container, secondFragment)
+                    .commit();
+        }else{
+            BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.board);
+            ToolBoxFragment toolfragment = (ToolBoxFragment) getSupportFragmentManager().findFragmentById(R.id.tools);
+            fragment.updateColor(Color.BLACK);
+            toolfragment.updateColor(Color.BLACK);
+        }
 
     }
 
@@ -48,10 +58,15 @@ public class MainActivity extends FragmentActivity implements ToolBoxFragment.On
         Bundle args = new Bundle();
         args.putInt(ColorPicker.ARG_COLOR, color);
         colorPicker.setArguments(args);
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, colorPicker);
-        transaction.addToBackStack(null);
+
+        if(findViewById(R.id.fragment_container) == null){
+            transaction.replace(R.id.tool_container, colorPicker);
+            transaction.addToBackStack(null);
+        }else{
+            transaction.replace(R.id.fragment_container, colorPicker);
+            transaction.addToBackStack(null);
+        }
 
         transaction.commit();
     }
@@ -71,9 +86,18 @@ public class MainActivity extends FragmentActivity implements ToolBoxFragment.On
         arg.putInt(BoardFragment.ARG_COLOR, color);
         boardFragment.setArguments(arg);
 
-        transaction
-                .replace(R.id.fragment_container, boardFragment)
-                .add(R.id.fragment_container,toolBoxFragment)
-                .commit();
+        if(findViewById(R.id.fragment_container) == null){
+            BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.board);
+            ToolBoxFragment toolfragment = (ToolBoxFragment) getSupportFragmentManager().findFragmentById(R.id.tools);
+            fragment.updateColor(color);
+            toolfragment.updateColor(color);
+
+        }else{
+            transaction
+                    .replace(R.id.fragment_container, boardFragment)
+                    .add(R.id.fragment_container, toolBoxFragment)
+                    .commit();
+        }
+
     }
 }
