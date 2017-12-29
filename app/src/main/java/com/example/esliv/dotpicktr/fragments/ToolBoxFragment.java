@@ -1,4 +1,4 @@
-package com.example.esliv.dotpicktr.activities;
+package com.example.esliv.dotpicktr.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +12,7 @@ import com.example.esliv.dotpicktr.R;
 
 public class ToolBoxFragment extends Fragment {
     private Button colorBtn;
-    final static String ARG_COLOR = "color";
+    public final static String ARG_COLOR = "color";
     private int currentColor =-1;
 
     public interface OnToolBoxSelectedListener {

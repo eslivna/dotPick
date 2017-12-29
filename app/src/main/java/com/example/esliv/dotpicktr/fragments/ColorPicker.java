@@ -1,4 +1,4 @@
-package com.example.esliv.dotpicktr.activities;
+package com.example.esliv.dotpicktr.fragments;
 
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
@@ -16,7 +16,7 @@ public class ColorPicker extends Fragment {
     SeekBar seekBarR, seekBarB, seekBarG;
     TextView valueR, valueG, valueB, rgbValue;
     Button okBtn;
-    final static String ARG_COLOR = "color";
+    public final static String ARG_COLOR = "color";
     int currentColor = -1;
 
     public interface OnColorPickerSelectedListener {

@@ -1,4 +1,4 @@
-package com.example.esliv.dotpicktr.activities;
+package com.example.esliv.dotpicktr.fragments;
 
 
 import android.os.Bundle;
@@ -8,11 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.esliv.dotpicktr.R;
+import com.example.esliv.dotpicktr.activities.Board;
 
 
 public class BoardFragment extends Fragment {
     Board board;
-    final static String ARG_COLOR = "color";
+    public final static String ARG_COLOR = "color";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

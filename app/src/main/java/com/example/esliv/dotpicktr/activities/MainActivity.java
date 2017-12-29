@@ -1,19 +1,19 @@
 package com.example.esliv.dotpicktr.activities;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
-import android.widget.Button;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.example.esliv.dotpicktr.R;
+import com.example.esliv.dotpicktr.fragments.BoardFragment;
+import com.example.esliv.dotpicktr.fragments.ColorPicker;
+import com.example.esliv.dotpicktr.fragments.ToolBoxFragment;
 
-public class MainActivity extends FragmentActivity implements ToolBoxFragment.OnToolBoxSelectedListener, ColorPicker.OnColorPickerSelectedListener {
+public class MainActivity extends AppCompatActivity implements ToolBoxFragment.OnToolBoxSelectedListener, ColorPicker.OnColorPickerSelectedListener {
 
 
     @Override
@@ -21,6 +21,8 @@ public class MainActivity extends FragmentActivity implements ToolBoxFragment.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_view);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         // Check whether the activity is using the layout version with
         // the fragment_container FrameLayout. If so, we must add the first fragment
         if (findViewById(R.id.fragment_container) != null) {
@@ -48,6 +50,7 @@ public class MainActivity extends FragmentActivity implements ToolBoxFragment.On
             fragment.updateColor(Color.BLACK);
             toolfragment.updateColor(Color.BLACK);
         }
+
 
     }
 
