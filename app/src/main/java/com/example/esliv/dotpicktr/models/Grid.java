@@ -1,27 +1,30 @@
 package com.example.esliv.dotpicktr.models;
 
+import android.graphics.Color;
+
 /**
  * Created by esliv on 23/10/2017.
  */
 
 public class Grid {
 
+
     /**
-     * Using the Singleton pattern.
+     * The active color that will be used to color a dot on the grid
      */
-    private static Grid gridInstance;
-    /**
-     * The size of the grid
-     */
-    private int gridSize;
+    private int pencilColor;
 
     /**
      * The grid containing all the elements
      */
     private Dot[][] grid;
 
-    private Grid(int gridSize) {
-        setGridSize(gridSize);
+
+    /**
+     * Initialize the Grid with in each element of the Grid a Dot
+     * @param gridSize The number of Dots on a row
+     */
+    public Grid(int gridSize) {
         grid = new Dot[gridSize][gridSize];
 
         //Initialise the grid with new elements
@@ -30,21 +33,15 @@ public class Grid {
                 grid[i][j] = new Dot();
             }
         };
-
     }
 
-    public static Grid get(int gridSize) {
-        if (gridInstance == null)
-            gridInstance = new Grid(gridSize);
-        return gridInstance;
-    }
 
     /**
      * Return the element of this grid
      *
      * @param i the row index
      * @param j the column index
-     * @return the requested element
+     * @return the requested {@link Dot}
      */
     public Dot getDot(int i, int j) {
         return grid[i][j];
@@ -57,9 +54,9 @@ public class Grid {
      * @param x      the row index
      * @param y      the column index
      */
-    public void setColor( int x, int y, int color) {
+    public void setColor( int x, int y) throws IndexOutOfBoundsException {
         Dot d = getDot(x, y);
-        d.setColor(color);
+        d.setColor(pencilColor);
     }
 
     /**
@@ -68,18 +65,15 @@ public class Grid {
      * @return the gridsize
      */
     public int getGridSize() {
-        return gridSize;
-    }
-
-    /**
-     * Sets the gridsize for this gird
-     *
-     * @param gridSize the grid size
-     */
-    public void setGridSize(int gridSize) {
-            this.gridSize = gridSize;
+        return grid.length;
     }
 
 
+    public int getPencilColor() {
+        return pencilColor;
+    }
 
+    public void setPencilColor(int pencilColor) {
+        this.pencilColor = pencilColor;
+    }
 }

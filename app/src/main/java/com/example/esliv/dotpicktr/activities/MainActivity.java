@@ -1,20 +1,26 @@
 package com.example.esliv.dotpicktr.activities;
 
+import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.example.esliv.dotpicktr.R;
 import com.example.esliv.dotpicktr.fragments.BoardFragment;
-import com.example.esliv.dotpicktr.fragments.ColorPicker;
-import com.example.esliv.dotpicktr.fragments.ToolBoxFragment;
+import com.example.esliv.dotpicktr.fragments.ColorPickerFragment;
+import com.example.esliv.dotpicktr.models.Grid;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-public class MainActivity extends AppCompatActivity implements ToolBoxFragment.OnToolBoxSelectedListener, ColorPicker.OnColorPickerSelectedListener {
-
+public class MainActivity extends AppCompatActivity {
+    /**
+     * The grid we are showing
+     */
+    private Grid grid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,6 +29,13 @@ public class MainActivity extends AppCompatActivity implements ToolBoxFragment.O
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        BottomNavigationViewEx mBottomNav = (BottomNavigationViewEx) findViewById(R.id.bottom_navigation);
+        mBottomNav.enableAnimation(false);
+        mBottomNav.enableShiftingMode(false);
+        mBottomNav.enableItemShiftingMode(false);
+        //TODO chance default 17
+        initBoard(17);
         // Check whether the activity is using the layout version with
         // the fragment_container FrameLayout. If so, we must add the first fragment
         if (findViewById(R.id.fragment_container) != null) {
@@ -30,77 +43,72 @@ public class MainActivity extends AppCompatActivity implements ToolBoxFragment.O
                 return;
             }
             FragmentManager manager = getSupportFragmentManager();
+            BoardFragment boardFragment = new BoardFragment();
+            manager.beginTransaction().replace(R.id.fragment_container, boardFragment).commit();
+            boardFragment.setGrid(grid);
 
-            BoardFragment firstFragment = new BoardFragment();
-            ToolBoxFragment secondFragment = new ToolBoxFragment();
-            Bundle arg = new Bundle();
-            arg.putInt(BoardFragment.ARG_COLOR, Color.rgb(0,0,0));
-            firstFragment.setArguments(arg);
-
-            Bundle args = new Bundle();
-            args.putInt(ToolBoxFragment.ARG_COLOR, Color.rgb(0,0,0));
-            secondFragment.setArguments(args);
-            manager.beginTransaction()
-                    .replace(R.id.fragment_container, firstFragment)
-                    .add(R.id.fragment_container, secondFragment)
-                    .commit();
-        }else{
+        } else {
             BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.board);
-            ToolBoxFragment toolfragment = (ToolBoxFragment) getSupportFragmentManager().findFragmentById(R.id.tools);
-            fragment.updateColor(Color.BLACK);
-            toolfragment.updateColor(Color.BLACK);
         }
 
+        mBottomNav.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_edit:
+                                if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof ColorPickerFragment) {
+                                    ColorPickerFragment colorPickerFragment = (ColorPickerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                                    grid.setPencilColor(colorPickerFragment.getCurrentColor());
+                                }
+                                switchToBoardFragment();
+                                break;
+                            case R.id.action_color:
+                                switchToColorPickerFragment();
+                                break;
+                            case R.id.action_visible:
 
+                            case R.id.action_revert:
+
+                        }
+                        return true;
+                    }
+                });
     }
 
-    @Override
-    public void onToolSelected(int color) {
-        ColorPicker colorPicker = new ColorPicker();
-
-        Bundle args = new Bundle();
-        args.putInt(ColorPicker.ARG_COLOR, color);
-        colorPicker.setArguments(args);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        if(findViewById(R.id.fragment_container) == null){
-            transaction.replace(R.id.tool_container, colorPicker);
-            transaction.addToBackStack(null);
-        }else{
-            transaction.replace(R.id.fragment_container, colorPicker);
-            transaction.addToBackStack(null);
-        }
-
-        transaction.commit();
+    /**
+     * Create a new Grid
+     *
+     * @param gridSize The size of the grid
+     */
+    private void initBoard(int gridSize) {
+        grid = new Grid(gridSize);
+        grid.setPencilColor(Color.BLACK);
     }
 
-    @Override
-    public void onColorSelected(int color) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        BoardFragment boardFragment = new BoardFragment();
-        ToolBoxFragment toolBoxFragment = new ToolBoxFragment();
-
-        Bundle args = new Bundle();
-        args.putInt(ToolBoxFragment.ARG_COLOR, color);
-        toolBoxFragment.setArguments(args);
-
-        Bundle arg = new Bundle();
-        arg.putInt(BoardFragment.ARG_COLOR, color);
-        boardFragment.setArguments(arg);
-
-        if(findViewById(R.id.fragment_container) == null){
-            BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.board);
-            ToolBoxFragment toolfragment = (ToolBoxFragment) getSupportFragmentManager().findFragmentById(R.id.tools);
-            fragment.updateColor(color);
-            toolfragment.updateColor(color);
-
-        }else{
-            transaction
-                    .replace(R.id.fragment_container, boardFragment)
-                    .add(R.id.fragment_container, toolBoxFragment)
-                    .commit();
+    public void switchToBoardFragment() {
+        if (findViewById(R.id.fragment_container) == null) {
+//TODO
+        } else {
+            FragmentManager manager = getSupportFragmentManager();
+            BoardFragment boardFragment = new BoardFragment();
+            manager.beginTransaction().replace(R.id.fragment_container, boardFragment).commit();
+            boardFragment.setGrid(grid);
         }
+    }
 
+    public void switchToColorPickerFragment() {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ColorPickerFragment.ARG_COLOR, grid.getPencilColor());
+
+        if (findViewById(R.id.fragment_container) == null) {
+//TODO
+        } else {
+            FragmentManager manager = getSupportFragmentManager();
+            ColorPickerFragment colorPickerFragment = new ColorPickerFragment();
+            colorPickerFragment.setArguments(bundle);
+            manager.beginTransaction().replace(R.id.fragment_container, colorPickerFragment).commit();
+        }
     }
 }

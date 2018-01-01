@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/edit"/>
+    <item
+        android:id="@+id/action_color"
+        android:icon="@drawable/inverse_color"
+        android:title="@string/color"/>
+    <item
+        android:id="@+id/action_visible"
+        android:icon="@drawable/visibility"
+        android:title="@string/visibilty" />
+    <item
+        android:id="@+id/action_revert"
+        android:icon="@drawable/undo"
+        android:title="@string/revert" />
+
+</menu>

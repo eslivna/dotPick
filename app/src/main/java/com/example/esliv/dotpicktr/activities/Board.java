@@ -1,53 +1,45 @@
 package com.example.esliv.dotpicktr.activities;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.example.esliv.dotpicktr.models.Dot;
 import com.example.esliv.dotpicktr.models.Grid;
-
-import java.util.Arrays;
 
 
 /**
  * Created by esliv on 23/10/2017.
  */
 
-public class Board extends View{
+public class Board extends View {
     private Grid grid;
-    private int activeColorCode= -1;
+
 
     public Board(Context context) {
         super(context);
-        initBoard();
     }
 
     public Board(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initBoard();
     }
 
     public Board(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initBoard();
     }
 
-    /**
-     * Create an instance of the grid with grid size 17
-     */
-    private void initBoard() {
-        grid = Grid.get(17);
+    public void setGrid(Grid grid) {
+        this.grid = grid;
     }
 
     /**
      * Draw the initial raster on the grid
+     *
      * @param canvas
      */
     private void drawRaster(Canvas canvas) {
@@ -58,11 +50,11 @@ public class Board extends View{
         paint.setColor(Color.BLACK);
 
         //draw horizontal grid lines
-        for (int i = 0; i < gridHeight +1; i += dotWidth) {
+        for (int i = 0; i < gridHeight + 1; i += dotWidth) {
             canvas.drawLine(0, i, gridHeight, i, paint);
         }
         //draw vertical grid lines
-        for (int i = 0; i < gridHeight +1; i += dotWidth) {
+        for (int i = 0; i < gridHeight + 1; i += dotWidth) {
             canvas.drawLine(i, 0, i, gridHeight, paint);
         }
 
@@ -82,10 +74,11 @@ public class Board extends View{
 
     /**
      * Draw the dot as a rectangle
+     *
      * @param canvas The canvas where we will draw the dot on
-     * @param x The position of the dot on de x-axis
-     * @param y The position of the dot on de y-axis
-     * @param color The background color of  the dot
+     * @param x      The position of the dot on de x-axis
+     * @param y      The position of the dot on de y-axis
+     * @param color  The background color of  the dot
      */
     private void drawRect(Canvas canvas, int x, int y, int color) {
         Paint paint = new Paint();
@@ -97,24 +90,25 @@ public class Board extends View{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         int dotWidth = getWidth() / grid.getGridSize();
         int x = (int) Math.floor((event.getX() / dotWidth));
         int y = (int) Math.floor((event.getY() / dotWidth));
-        grid.setColor(x, y, activeColorCode);
+        try {
+            grid.setColor(x, y);
+        } catch (IndexOutOfBoundsException e) {
+
+        }
         invalidate();
         return true;
     }
 
-    public void setActiveColorCode(int color){
-        this.activeColorCode = color;
+    public void setActiveColorCode(int color) {
+        grid.setPencilColor(color);
     }
 
-    public int getActiveColorCode(){
-        return this.activeColorCode;
+    public int getActiveColorCode() {
+        return grid.getPencilColor();
     }
-
-
 
 
 }

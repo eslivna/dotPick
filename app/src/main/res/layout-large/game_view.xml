@@ -3,7 +3,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:baselineAligned="false">
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar"
@@ -25,11 +26,7 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <fragment
-            android:id="@+id/tools"
-            android:name="com.example.esliv.dotpicktr.fragments.ToolBoxFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <FrameLayout

@@ -12,16 +12,12 @@ import android.widget.TextView;
 
 import com.example.esliv.dotpicktr.R;
 
-public class ColorPicker extends Fragment {
+public class ColorPickerFragment extends Fragment {
     SeekBar seekBarR, seekBarB, seekBarG;
     TextView valueR, valueG, valueB, rgbValue;
-    Button okBtn;
+
     public final static String ARG_COLOR = "color";
     int currentColor = -1;
-
-    public interface OnColorPickerSelectedListener {
-        public void onColorSelected(int color);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,7 +36,6 @@ public class ColorPicker extends Fragment {
 
         rgbValue = v.findViewById(R.id.rgbView);
 
-        okBtn = v.findViewById(R.id.okBtn);
 
         seekBarR.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -97,21 +92,6 @@ public class ColorPicker extends Fragment {
         });
 
 
-        okBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                currentColor = Color.rgb(
-                        seekBarR.getProgress(),
-                        seekBarG.getProgress(),
-                        seekBarB.getProgress())
-                ;
-                OnColorPickerSelectedListener mCallback = (OnColorPickerSelectedListener)getActivity();
-                mCallback.onColorSelected(currentColor);
-
-            }
-        });
-
-
         return v;
     }
 
@@ -128,7 +108,7 @@ public class ColorPicker extends Fragment {
         }
     }
 
-    private void updateColor(int colorCode){
+    private void updateColor(int colorCode) {
         rgbValue.setBackgroundColor(colorCode);
 
         seekBarR.setProgress(Color.red(colorCode));
@@ -141,4 +121,10 @@ public class ColorPicker extends Fragment {
         valueB.setText(String.valueOf(Color.blue(colorCode)));
     }
 
+    public int getCurrentColor() {
+        return Color.rgb(
+                Integer.valueOf(valueR.getText().toString()),
+                Integer.valueOf(valueG.getText().toString()),
+                Integer.valueOf(valueB.getText().toString()));
+    }
 }

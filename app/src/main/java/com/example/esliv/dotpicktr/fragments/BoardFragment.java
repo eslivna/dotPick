@@ -9,32 +9,29 @@ import android.view.ViewGroup;
 
 import com.example.esliv.dotpicktr.R;
 import com.example.esliv.dotpicktr.activities.Board;
+import com.example.esliv.dotpicktr.models.Dot;
+import com.example.esliv.dotpicktr.models.Grid;
 
 
 public class BoardFragment extends Fragment {
     Board board;
-    public final static String ARG_COLOR = "color";
+    private Grid grid;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_board, container, false);
-        board =  v.findViewById(R.id.board);
+        board = v.findViewById(R.id.board);
+        board.setGrid(grid);
         return v;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Bundle args = getArguments();
-        if (args != null) {
-            updateColor(args.getInt(ARG_COLOR));
-        } else if (board.getActiveColorCode() != -1) {
-            updateColor(board.getActiveColorCode());
-        }
     }
 
-    public void updateColor(int color) {
-        board.setActiveColorCode(color);
+    public void setGrid(Grid grid) {
+        this.grid = grid;
     }
+
 }
