@@ -34,4 +34,8 @@ public class BoardFragment extends Fragment {
         this.grid = grid;
     }
 
+    public void redrawCanvas() {
+        board.invalidate();
+    }
+
 }

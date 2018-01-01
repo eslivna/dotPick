@@ -69,7 +69,9 @@ public class Board extends View {
                 }
             }
         }
-        drawRaster(canvas);
+        if (grid.isDrawGridLines()) {
+            drawRaster(canvas);
+        }
     }
 
     /**

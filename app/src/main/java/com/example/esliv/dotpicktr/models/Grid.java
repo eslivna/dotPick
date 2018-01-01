@@ -19,9 +19,14 @@ public class Grid {
      */
     private Dot[][] grid;
 
+    /**
+     * Whether or not we are drawing the gridlines on the canvas
+     */
+    private boolean drawGridLines = true;
 
     /**
      * Initialize the Grid with in each element of the Grid a Dot
+     *
      * @param gridSize The number of Dots on a row
      */
     public Grid(int gridSize) {
@@ -32,7 +37,7 @@ public class Grid {
             for (int j = 0; j < gridSize; j++) {
                 grid[i][j] = new Dot();
             }
-        };
+        }
     }
 
 
@@ -51,10 +56,10 @@ public class Grid {
     /**
      * Set the color for a certain dot
      *
-     * @param x      the row index
-     * @param y      the column index
+     * @param x the row index
+     * @param y the column index
      */
-    public void setColor( int x, int y) throws IndexOutOfBoundsException {
+    public void setColor(int x, int y) throws IndexOutOfBoundsException {
         Dot d = getDot(x, y);
         d.setColor(pencilColor);
     }
@@ -75,5 +80,21 @@ public class Grid {
 
     public void setPencilColor(int pencilColor) {
         this.pencilColor = pencilColor;
+    }
+
+    public void clearGrid() {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
+                grid[i][j] = new Dot();
+            }
+        }
+    }
+
+    public boolean isDrawGridLines() {
+        return drawGridLines;
+    }
+
+    public void setDrawGridLines(boolean drawGridLines) {
+        this.drawGridLines = drawGridLines;
     }
 }

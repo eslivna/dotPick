@@ -8,4 +8,6 @@
     <string name="color">Color</string>
     <string name="visibilty">Visibilty</string>
     <string name="revert">Revert</string>
+    <string name="grid_on_off">Grid ON/OFF</string>
+    <string name="clear_canvas">Clear canvas</string>
 </resources>

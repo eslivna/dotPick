@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.esliv.dotpicktr.R;
@@ -76,6 +77,26 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_grid_on_off:
+                toggleGrid();
+                return true;
+            case R.id.action_clear_canvas:
+                clearCanvas();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     /**
      * Create a new Grid
      *
@@ -87,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void switchToBoardFragment() {
+    private void switchToBoardFragment() {
         if (findViewById(R.id.fragment_container) == null) {
 //TODO
         } else {
@@ -98,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void switchToColorPickerFragment() {
+    private void switchToColorPickerFragment() {
         Bundle bundle = new Bundle();
         bundle.putInt(ColorPickerFragment.ARG_COLOR, grid.getPencilColor());
 
@@ -109,6 +130,22 @@ public class MainActivity extends AppCompatActivity {
             ColorPickerFragment colorPickerFragment = new ColorPickerFragment();
             colorPickerFragment.setArguments(bundle);
             manager.beginTransaction().replace(R.id.fragment_container, colorPickerFragment).commit();
+        }
+    }
+
+    private void clearCanvas(){
+        grid.clearGrid();
+        if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof BoardFragment) {
+            BoardFragment boardFragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            boardFragment.redrawCanvas();
+        }
+    }
+
+    private void toggleGrid(){
+        grid.setDrawGridLines(!grid.isDrawGridLines());
+        if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof BoardFragment) {
+            BoardFragment boardFragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            boardFragment.redrawCanvas();
         }
     }
 }
