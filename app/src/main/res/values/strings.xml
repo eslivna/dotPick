@@ -10,4 +10,5 @@
     <string name="revert">Revert</string>
     <string name="grid_on_off">Grid ON/OFF</string>
     <string name="clear_canvas">Clear canvas</string>
+    <string name="take_a_picture">Take a picture</string>
 </resources>

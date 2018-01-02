@@ -1,7 +1,9 @@
 package com.example.esliv.dotpicktr.activities;
 
-import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
      * The grid we are showing
      */
     private Grid grid;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         mBottomNav.enableShiftingMode(false);
         mBottomNav.enableItemShiftingMode(false);
         //TODO chance default 17
-        initBoard(17);
+        initBoard(16);
         // Check whether the activity is using the layout version with
         // the fragment_container FrameLayout. If so, we must add the first fragment
         if (findViewById(R.id.fragment_container) != null) {
@@ -92,6 +95,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_clear_canvas:
                 clearCanvas();
                 return true;
+            case R.id.action_take_picture:
+                takePicture();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -133,19 +139,53 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void clearCanvas(){
+    private void clearCanvas() {
         grid.clearGrid();
+        redrawCanvas();
+    }
+
+    private void toggleGrid() {
+        grid.setDrawGridLines(!grid.isDrawGridLines());
+        redrawCanvas();
+    }
+
+    private void takePicture() {
+        dispatchTakePictureIntent();
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            if (extras != null) {
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                Bitmap map = null;
+                if (imageBitmap != null) {
+                    map = Bitmap.createScaledBitmap(imageBitmap, grid.getGridSize(), grid.getGridSize(), false);
+                }
+                for (int i = 0; i < grid.getGridSize(); i++) {
+                    for (int j = 0; j < grid.getGridSize(); j++) {
+                        grid.setPencilColor(map.getPixel(i, j));
+                        grid.setColor(i, j);
+                    }
+                    redrawCanvas();
+                }
+            }
+        }
+    }
+
+    private void redrawCanvas() {
         if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof BoardFragment) {
             BoardFragment boardFragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
             boardFragment.redrawCanvas();
         }
     }
 
-    private void toggleGrid(){
-        grid.setDrawGridLines(!grid.isDrawGridLines());
-        if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof BoardFragment) {
-            BoardFragment boardFragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            boardFragment.redrawCanvas();
-        }
-    }
 }

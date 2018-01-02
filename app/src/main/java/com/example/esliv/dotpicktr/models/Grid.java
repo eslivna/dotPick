@@ -40,7 +40,6 @@ public class Grid {
         }
     }
 
-
     /**
      * Return the element of this grid
      *
