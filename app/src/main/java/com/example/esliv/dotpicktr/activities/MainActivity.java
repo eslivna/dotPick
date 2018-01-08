@@ -34,12 +34,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         BottomNavigationViewEx mBottomNav = (BottomNavigationViewEx) findViewById(R.id.bottom_navigation);
         mBottomNav.enableAnimation(false);
         mBottomNav.enableShiftingMode(false);
         mBottomNav.enableItemShiftingMode(false);
-        //TODO chance default 17
-        initBoard(16);
+
+        Intent intent = getIntent();
+        int size = intent.getIntExtra(CreateActivity.ARG_SIZE, 16);
+        initBoard(size);
         // Check whether the activity is using the layout version with
         // the fragment_container FrameLayout. If so, we must add the first fragment
         if (findViewById(R.id.fragment_container) != null) {
@@ -97,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_take_picture:
                 takePicture();
+                return true;
+            case android.R.id.home:
+                switchToMainActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -187,5 +194,11 @@ public class MainActivity extends AppCompatActivity {
             boardFragment.redrawCanvas();
         }
     }
+
+    private void switchToMainActivity() {
+        Intent intent = new Intent(this, CreateActivity.class);
+        startActivity(intent);
+    }
+
 
 }

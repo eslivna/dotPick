@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="size_names">
+        <item>16 x 16</item>
+        <item>32 x 32</item>
+        <item>64 x 64</item>
+        <item>128 x 128</item>
+    </string-array>
+</resources>
