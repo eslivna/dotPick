@@ -7,8 +7,10 @@ import android.graphics.Color;
  */
 
 public class Grid {
-
-
+    /**
+     * The id of the grid in the db
+     */
+    private int id;
     /**
      * The active color that will be used to color a dot on the grid
      */
@@ -17,40 +19,65 @@ public class Grid {
     /**
      * The grid containing all the elements
      */
-    private Dot[][] grid;
+    private int[][] grid;
 
     /**
      * Whether or not we are drawing the gridlines on the canvas
      */
-    private boolean drawGridLines = true;
+    private boolean drawGridLines;
 
     /**
-     * Initialize the Grid with in each element of the Grid a Dot
-     *
-     * @param gridSize The number of Dots on a row
+     * The name of the Grid
      */
-    public Grid(int gridSize) {
-        grid = new Dot[gridSize][gridSize];
+    private String name;
 
-        //Initialise the grid with new elements
+    /**
+     * The size of the grid
+     */
+    private int gridSize;
+
+    /**
+     * Initialize the Grid with white elements
+     *
+     * @param gridSize The number of elements on a row
+     */
+    public Grid(int gridSize)
+    {
+        setName("untitled");
+        this.drawGridLines = true;
+        this.grid = new int[gridSize][gridSize];
+        //Initialise the grid with white elements
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
-                grid[i][j] = new Dot();
+                grid[i][j] = Color.WHITE;
             }
         }
     }
 
-    /**
-     * Return the element of this grid
-     *
-     * @param i the row index
-     * @param j the column index
-     * @return the requested {@link Dot}
-     */
-    public Dot getDot(int i, int j) {
-        return grid[i][j];
+    public Grid(int id, String name, int pencilColor, int[][] grid, int gridSize, boolean drawGridLines) {
+        this.id = id;
+        this.name = name;
+        this.gridSize = gridSize;
+        this.pencilColor = pencilColor;
+        this.grid = grid;
+        this.drawGridLines = drawGridLines;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int[][] getGrid() {
+        return grid;
+    }
+
+    public int getColor(int x, int y) {
+        return grid[x][y];
+    }
 
     /**
      * Set the color for a certain dot
@@ -59,19 +86,8 @@ public class Grid {
      * @param y the column index
      */
     public void setColor(int x, int y) throws IndexOutOfBoundsException {
-        Dot d = getDot(x, y);
-        d.setColor(pencilColor);
+        grid[x][y] = pencilColor;
     }
-
-    /**
-     * Returns the size of this grid
-     *
-     * @return the gridsize
-     */
-    public int getGridSize() {
-        return grid.length;
-    }
-
 
     public int getPencilColor() {
         return pencilColor;
@@ -84,7 +100,7 @@ public class Grid {
     public void clearGrid() {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid.length; j++) {
-                grid[i][j] = new Dot();
+                grid[i][j] = Color.WHITE;
             }
         }
     }
@@ -95,5 +111,33 @@ public class Grid {
 
     public void setDrawGridLines(boolean drawGridLines) {
         this.drawGridLines = drawGridLines;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setGridSize(int gridSize) {
+        this.gridSize = gridSize;
+    }
+
+    public int getGridSize() {
+        return gridSize;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
+                builder.append(getColor(i, j)).append(",");
+            }
+        }
+        builder.setLength(builder.length() - 1);
+        return builder.toString();
     }
 }

@@ -17,7 +17,7 @@ public class AddGridDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Titel")
+        builder.setTitle("Choose size canvas")
                 .setItems(R.array.size_names, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int position) {
                         OnSelectionClickListener callback = (OnSelectionClickListener) getActivity();

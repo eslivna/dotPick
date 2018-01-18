@@ -1,8 +1,10 @@
 package com.example.esliv.dotpicktr.activities;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -19,11 +21,17 @@ import com.example.esliv.dotpicktr.fragments.ColorPickerFragment;
 import com.example.esliv.dotpicktr.models.Grid;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import com.example.esliv.dotpicktr.persistence.GridContract.GridEntry;
+
 public class MainActivity extends AppCompatActivity {
     /**
      * The grid we are showing
      */
     private Grid grid;
+
+    int id, size, pencilColor;
+    String name, gridString, gridLines;
+    boolean newObject = false;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
@@ -42,8 +50,24 @@ public class MainActivity extends AppCompatActivity {
         mBottomNav.enableItemShiftingMode(false);
 
         Intent intent = getIntent();
-        int size = intent.getIntExtra(CreateActivity.ARG_SIZE, 16);
-        initBoard(size);
+
+        if (intent.hasExtra(CreateActivity.ARG_ID)) {
+            id = intent.getIntExtra(CreateActivity.ARG_ID, 0);
+            name = intent.getStringExtra(CreateActivity.ARG_NAME);
+            gridString = intent.getStringExtra(CreateActivity.ARG_GRID);
+            gridLines = intent.getStringExtra(CreateActivity.ARG_GRIDLINES);
+            size = intent.getIntExtra(CreateActivity.ARG_SIZE, 0);
+            int[][] board = getGrid(gridString, size);
+            pencilColor = intent.getIntExtra(CreateActivity.ARG_PENCILCOLOR, 0);
+
+            grid = new Grid(id, name, pencilColor, board, size, Boolean.parseBoolean(gridLines));
+        } else {
+            newObject = true;
+            size = intent.getIntExtra(CreateActivity.ARG_SIZE, 0);
+            initBoard(size);
+        }
+
+
         // Check whether the activity is using the layout version with
         // the fragment_container FrameLayout. If so, we must add the first fragment
         if (findViewById(R.id.fragment_container) != null) {
@@ -54,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             BoardFragment boardFragment = new BoardFragment();
             manager.beginTransaction().replace(R.id.fragment_container, boardFragment).commit();
             boardFragment.setGrid(grid);
+
 
         } else {
             BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.board);
@@ -75,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
                                 switchToColorPickerFragment();
                                 break;
                             case R.id.action_visible:
+                                toggleGridLines();
+                                break;
 
                             case R.id.action_revert:
 
@@ -94,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_grid_on_off:
-                toggleGrid();
+                toggleGridLines();
                 return true;
             case R.id.action_clear_canvas:
                 clearCanvas();
@@ -103,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 takePicture();
                 return true;
             case android.R.id.home:
+                saveGrid();
                 switchToMainActivity();
                 return true;
             default:
@@ -117,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initBoard(int gridSize) {
         grid = new Grid(gridSize);
+        grid.setGridSize(gridSize);
         grid.setPencilColor(Color.BLACK);
     }
 
@@ -151,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         redrawCanvas();
     }
 
-    private void toggleGrid() {
+    private void toggleGridLines() {
         grid.setDrawGridLines(!grid.isDrawGridLines());
         redrawCanvas();
     }
@@ -198,6 +227,52 @@ public class MainActivity extends AppCompatActivity {
     private void switchToMainActivity() {
         Intent intent = new Intent(this, CreateActivity.class);
         startActivity(intent);
+    }
+
+    private void saveGrid() {
+        if (newObject) {
+            newObject = false;
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GridEntry.COLUMN_GRIDLINES, String.valueOf(grid.isDrawGridLines()));
+            contentValues.put(GridEntry.COLUMN_GRID, grid.toString());
+            contentValues.put(GridEntry.COLUMN_NAME, grid.getName());
+            contentValues.put(GridEntry.COLUMN_SIZE, grid.getGridSize());
+            contentValues.put(GridEntry.COLUMN_PENCILCOLOR, grid.getPencilColor());
+
+            Uri uri = GridEntry.CONTENT_URI;
+            getContentResolver().insert(uri, contentValues);
+        } else {
+            updateGrid();
+        }
+    }
+
+    public void updateGrid() {
+        String selection = GridEntry._ID + " =?";
+        String[] selectionArgs = {String.valueOf(grid.getId())};
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GridEntry.COLUMN_NAME, grid.getName());
+        contentValues.put(GridEntry.COLUMN_GRIDLINES, grid.isDrawGridLines());
+        contentValues.put(GridEntry.COLUMN_SIZE, grid.getGridSize());
+        contentValues.put(GridEntry.COLUMN_GRID, grid.toString());
+        contentValues.put(GridEntry.COLUMN_PENCILCOLOR, grid.getPencilColor());
+
+        Uri uri = GridEntry.CONTENT_URI;
+        getContentResolver().update(uri, contentValues, selection, selectionArgs);
+    }
+
+    private int[][] getGrid(String gridString, int size) {
+        int[][] result = new int[size][size];
+        String[] array = gridString.split(",");
+        int counter = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                result[i][j] = Integer.parseInt(array[counter]);
+                counter++;
+            }
+        }
+        return result;
+
     }
 
 

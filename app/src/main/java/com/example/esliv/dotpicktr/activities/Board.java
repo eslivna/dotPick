@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
-import com.example.esliv.dotpicktr.models.Dot;
 import com.example.esliv.dotpicktr.models.Grid;
 
 
@@ -64,9 +63,8 @@ public class Board extends View {
     protected void onDraw(Canvas canvas) {
         for (int i = 0; i < grid.getGridSize(); i++) {
             for (int j = 0; j < grid.getGridSize(); j++) {
-                if (grid.getDot(i, j).getColor() != -1 || grid.getDot(i, j).getColor() != -1) {
-                    drawRect(canvas, i, j, grid.getDot(i, j).getColor());
-                }
+                drawRect(canvas, i, j, grid.getColor(i, j));
+
             }
         }
         if (grid.isDrawGridLines()) {
@@ -103,14 +101,5 @@ public class Board extends View {
         invalidate();
         return true;
     }
-
-    public void setActiveColorCode(int color) {
-        grid.setPencilColor(color);
-    }
-
-    public int getActiveColorCode() {
-        return grid.getPencilColor();
-    }
-
 
 }
