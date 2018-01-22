@@ -33,6 +33,7 @@ public class BoardFragment extends Fragment {
 
     public void setGrid(Grid grid) {
         this.grid = grid;
+
     }
 
     public void redrawCanvas() {

@@ -1,5 +1,6 @@
 package com.example.esliv.dotpicktr.persistence;
 
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -9,10 +10,10 @@ import android.provider.BaseColumns;
 
 public final class GridContract {
 
-    //added voor contentprovider
+    //added for contentprovider
     public static final String CONTENT_AUTHORITY = "com.example.esliv.provider.dotpicktr";
 
-    //added voor contentprovider
+    //added for contentprovider
     // BASE_CONTENT_URI: content://com.example.esliv.provider.dotpicktr
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
@@ -35,6 +36,11 @@ public final class GridContract {
         public static final String COLUMN_PENCILCOLOR = "color";
         public static final String COLUMN_GRIDLINES = "gridlines";
         public static final String COLUMN_GRID = "grid";
+
+        public static Uri buildRowUri(long id)
+        {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
 
     }
 }

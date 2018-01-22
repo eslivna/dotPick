@@ -44,8 +44,8 @@ public class Grid {
     public Grid(int gridSize)
     {
         setName("untitled");
-        this.drawGridLines = true;
         this.grid = new int[gridSize][gridSize];
+        this.drawGridLines = true;
         //Initialise the grid with white elements
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {

@@ -14,7 +14,6 @@
         </activity>
         <activity
             android:name=".activities.CreateActivity"
-            android:label="@string/title_activity_create"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,9 +24,8 @@
 
         <provider
             android:name=".persistence.GridProvider"
-            android:exported="false"
-            android:authorities="com.example.esliv.provider.dotpicktr">
-        </provider>
+            android:authorities="com.example.esliv.provider.dotpicktr"
+            android:exported="false"></provider>
     </application>
 
 

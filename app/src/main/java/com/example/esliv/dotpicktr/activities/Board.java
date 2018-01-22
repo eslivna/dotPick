@@ -61,14 +61,16 @@ public class Board extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        for (int i = 0; i < grid.getGridSize(); i++) {
-            for (int j = 0; j < grid.getGridSize(); j++) {
-                drawRect(canvas, i, j, grid.getColor(i, j));
+        if (grid != null) {
+            for (int i = 0; i < grid.getGridSize(); i++) {
+                for (int j = 0; j < grid.getGridSize(); j++) {
+                    drawRect(canvas, i, j, grid.getColor(i, j));
 
+                }
             }
-        }
-        if (grid.isDrawGridLines()) {
-            drawRaster(canvas);
+            if (grid.isDrawGridLines()) {
+                drawRaster(canvas);
+            }
         }
     }
 
@@ -90,16 +92,19 @@ public class Board extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int dotWidth = getWidth() / grid.getGridSize();
-        int x = (int) Math.floor((event.getX() / dotWidth));
-        int y = (int) Math.floor((event.getY() / dotWidth));
-        try {
-            grid.setColor(x, y);
-        } catch (IndexOutOfBoundsException e) {
+        if (grid != null) {
+            int dotWidth = getWidth() / grid.getGridSize();
+            int x = (int) Math.floor((event.getX() / dotWidth));
+            int y = (int) Math.floor((event.getY() / dotWidth));
+            try {
+                grid.setColor(x, y);
+            } catch (IndexOutOfBoundsException e) {
 
+            }
+            invalidate();
         }
-        invalidate();
         return true;
+
     }
 
 }

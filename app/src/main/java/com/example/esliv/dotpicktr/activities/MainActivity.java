@@ -1,7 +1,9 @@
 package com.example.esliv.dotpicktr.activities;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -18,12 +20,15 @@ import android.view.MenuItem;
 import com.example.esliv.dotpicktr.R;
 import com.example.esliv.dotpicktr.fragments.BoardFragment;
 import com.example.esliv.dotpicktr.fragments.ColorPickerFragment;
+import com.example.esliv.dotpicktr.fragments.GalleryFragment;
 import com.example.esliv.dotpicktr.models.Grid;
+import com.example.esliv.dotpicktr.persistence.GridContract;
+import com.example.esliv.dotpicktr.persistence.QueryHandler;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import com.example.esliv.dotpicktr.persistence.GridContract.GridEntry;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements QueryHandler.AsyncQueryListener {
     /**
      * The grid we are showing
      */
@@ -31,8 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
     int id, size, pencilColor;
     String name, gridString, gridLines;
-    boolean newObject = false;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private Uri uri;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,20 +57,20 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(CreateActivity.ARG_ID)) {
-            id = intent.getIntExtra(CreateActivity.ARG_ID, 0);
-            name = intent.getStringExtra(CreateActivity.ARG_NAME);
-            gridString = intent.getStringExtra(CreateActivity.ARG_GRID);
-            gridLines = intent.getStringExtra(CreateActivity.ARG_GRIDLINES);
-            size = intent.getIntExtra(CreateActivity.ARG_SIZE, 0);
-            int[][] board = getGrid(gridString, size);
-            pencilColor = intent.getIntExtra(CreateActivity.ARG_PENCILCOLOR, 0);
-
-            grid = new Grid(id, name, pencilColor, board, size, Boolean.parseBoolean(gridLines));
-        } else {
-            newObject = true;
+        if (intent.hasExtra(CreateActivity.ARG_SIZE)) {
             size = intent.getIntExtra(CreateActivity.ARG_SIZE, 0);
             initBoard(size);
+        } else {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null && !bundle.isEmpty()) {
+                uri = bundle.getParcelable(GalleryFragment.URI_KEY);
+                if (uri != null) {
+                    QueryHandler handler = new QueryHandler(getApplicationContext(), this);
+                    handler.startQuery(QueryHandler.OperationToken.TOKEN_QUERY, null, uri, null, null,
+                            null, null);
+                }
+            }
+
         }
 
 
@@ -74,14 +80,10 @@ public class MainActivity extends AppCompatActivity {
             if (savedInstanceState != null) {
                 return;
             }
-            FragmentManager manager = getSupportFragmentManager();
-            BoardFragment boardFragment = new BoardFragment();
-            manager.beginTransaction().replace(R.id.fragment_container, boardFragment).commit();
-            boardFragment.setGrid(grid);
+            if (grid != null) {
+                displayBoardFragment();
+            }
 
-
-        } else {
-            BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.board);
         }
 
         mBottomNav.setOnNavigationItemSelectedListener(
@@ -131,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case android.R.id.home:
                 saveGrid();
-                switchToMainActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -224,41 +225,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void switchToMainActivity() {
+    private void switchToGallery() {
         Intent intent = new Intent(this, CreateActivity.class);
         startActivity(intent);
     }
 
     private void saveGrid() {
-        if (newObject) {
-            newObject = false;
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(GridEntry.COLUMN_GRIDLINES, String.valueOf(grid.isDrawGridLines()));
-            contentValues.put(GridEntry.COLUMN_GRID, grid.toString());
-            contentValues.put(GridEntry.COLUMN_NAME, grid.getName());
-            contentValues.put(GridEntry.COLUMN_SIZE, grid.getGridSize());
-            contentValues.put(GridEntry.COLUMN_PENCILCOLOR, grid.getPencilColor());
-
-            Uri uri = GridEntry.CONTENT_URI;
-            getContentResolver().insert(uri, contentValues);
-        } else {
-            updateGrid();
-        }
-    }
-
-    public void updateGrid() {
-        String selection = GridEntry._ID + " =?";
-        String[] selectionArgs = {String.valueOf(grid.getId())};
+        QueryHandler queryHandler = new QueryHandler(getApplicationContext(), null);
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(GridEntry.COLUMN_NAME, grid.getName());
-        contentValues.put(GridEntry.COLUMN_GRIDLINES, grid.isDrawGridLines());
-        contentValues.put(GridEntry.COLUMN_SIZE, grid.getGridSize());
+        contentValues.put(GridEntry.COLUMN_GRIDLINES, String.valueOf(grid.isDrawGridLines()));
         contentValues.put(GridEntry.COLUMN_GRID, grid.toString());
+        contentValues.put(GridEntry.COLUMN_NAME, grid.getName());
+        contentValues.put(GridEntry.COLUMN_SIZE, grid.getGridSize());
         contentValues.put(GridEntry.COLUMN_PENCILCOLOR, grid.getPencilColor());
 
-        Uri uri = GridEntry.CONTENT_URI;
-        getContentResolver().update(uri, contentValues, selection, selectionArgs);
+        if (uri != null) {
+            long _id = ContentUris.parseId(uri);
+            String selection = GridEntry._ID + " = ?";
+            String[] selectionArg = {String.valueOf(_id)};
+            queryHandler.startUpdate(QueryHandler.OperationToken.TOKEN_UPDATE, null, GridEntry.CONTENT_URI, contentValues, selection, selectionArg);
+        } else {
+            queryHandler.startInsert(QueryHandler.OperationToken.TOKEN_INSERT, null, GridEntry.CONTENT_URI, contentValues);
+        }
+
+        switchToGallery();
+    }
+
+
+    private void displayBoardFragment() {
+        FragmentManager manager = getSupportFragmentManager();
+        BoardFragment boardFragment = new BoardFragment();
+        manager.beginTransaction().replace(R.id.fragment_container, boardFragment).commit();
+        boardFragment.setGrid(grid);
+    }
+
+
+    @Override
+    public void onQueryComplete(int token, Object cookie, Cursor cursor) {
+        if (cursor != null && cursor.getCount() == 1 && cursor.moveToFirst()) {
+            id = cursor.getInt(cursor.getColumnIndex(GridContract.GridEntry._ID));
+            name = cursor.getString(cursor.getColumnIndex(GridContract.GridEntry.COLUMN_NAME));
+            gridString = cursor.getString(cursor.getColumnIndex(GridContract.GridEntry.COLUMN_GRID));
+            gridLines = cursor.getString(cursor.getColumnIndex(GridContract.GridEntry.COLUMN_GRIDLINES));
+            size = cursor.getInt(cursor.getColumnIndex(GridContract.GridEntry.COLUMN_SIZE));
+            int[][] board = getGrid(gridString, size);
+            pencilColor = cursor.getInt(cursor.getColumnIndex(GridContract.GridEntry.COLUMN_PENCILCOLOR));
+
+            grid = new Grid(id, name, pencilColor, board, size, Boolean.parseBoolean(gridLines));
+            cursor.close();
+        }
+        displayBoardFragment();
     }
 
     private int[][] getGrid(String gridString, int size) {
@@ -272,8 +289,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return result;
-
     }
-
-
 }
