@@ -6,7 +6,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
+import com.example.esliv.dotpicktr.DotPicktApplication;
 import com.example.esliv.dotpicktr.R;
+import com.squareup.leakcanary.RefWatcher;
 
 /**
  * Created by esliv on 8/01/2018.
@@ -31,5 +33,11 @@ public class AddGridDialogFragment extends DialogFragment {
         void onGridSize(int position);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = DotPicktApplication.getRefWatcher(getActivity());
+        refWatcher.watch(this);
+    }
 
 }

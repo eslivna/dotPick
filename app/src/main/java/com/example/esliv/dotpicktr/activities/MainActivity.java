@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.esliv.dotpicktr.DotPicktApplication;
 import com.example.esliv.dotpicktr.R;
 import com.example.esliv.dotpicktr.fragments.BoardFragment;
 import com.example.esliv.dotpicktr.fragments.ColorPickerFragment;
@@ -27,6 +28,7 @@ import com.example.esliv.dotpicktr.persistence.QueryHandler;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import com.example.esliv.dotpicktr.persistence.GridContract.GridEntry;
+import com.squareup.leakcanary.RefWatcher;
 
 public class MainActivity extends AppCompatActivity implements QueryHandler.AsyncQueryListener {
     /**
@@ -289,5 +291,12 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
             }
         }
         return result;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = DotPicktApplication.getRefWatcher(this);
+        refWatcher.watch(this);
     }
 }

@@ -10,7 +10,9 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.example.esliv.dotpicktr.DotPicktApplication;
 import com.example.esliv.dotpicktr.R;
+import com.squareup.leakcanary.RefWatcher;
 
 public class ColorPickerFragment extends Fragment {
     SeekBar seekBarR, seekBarB, seekBarG;
@@ -126,5 +128,12 @@ public class ColorPickerFragment extends Fragment {
                 Integer.valueOf(valueR.getText().toString()),
                 Integer.valueOf(valueG.getText().toString()),
                 Integer.valueOf(valueB.getText().toString()));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = DotPicktApplication.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 }

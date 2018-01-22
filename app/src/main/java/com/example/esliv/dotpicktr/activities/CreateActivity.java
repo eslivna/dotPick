@@ -12,11 +12,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.example.esliv.dotpicktr.DotPicktApplication;
 import com.example.esliv.dotpicktr.R;
 import com.example.esliv.dotpicktr.adapters.GridAdapter;
 import com.example.esliv.dotpicktr.fragments.AddGridDialogFragment;
 import com.example.esliv.dotpicktr.fragments.GalleryFragment;
 import com.example.esliv.dotpicktr.persistence.GridContract;
+import com.squareup.leakcanary.RefWatcher;
 
 import butterknife.BindView;
 
@@ -91,5 +93,12 @@ public class CreateActivity extends AppCompatActivity implements AddGridDialogFr
         contentValues.put(GridContract.GridEntry.COLUMN_NAME, answer);
         Uri uri = GridContract.GridEntry.CONTENT_URI;
         getContentResolver().update(uri, contentValues, selection, selectionArgs);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = DotPicktApplication.getRefWatcher(this);
+        refWatcher.watch(this);
     }
 }

@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.example.esliv.dotpicktr.DotPicktApplication;
 import com.example.esliv.dotpicktr.R;
 import com.example.esliv.dotpicktr.activities.Board;
 import com.example.esliv.dotpicktr.models.Grid;
+import com.squareup.leakcanary.RefWatcher;
 
 
 public class BoardFragment extends Fragment {
@@ -38,6 +40,13 @@ public class BoardFragment extends Fragment {
 
     public void redrawCanvas() {
         board.invalidate();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = DotPicktApplication.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
 }

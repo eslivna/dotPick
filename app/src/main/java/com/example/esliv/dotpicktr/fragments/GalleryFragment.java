@@ -17,11 +17,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.esliv.dotpicktr.DotPicktApplication;
 import com.example.esliv.dotpicktr.R;
 import com.example.esliv.dotpicktr.activities.CreateActivity;
 import com.example.esliv.dotpicktr.activities.MainActivity;
 import com.example.esliv.dotpicktr.adapters.GridAdapter;
 import com.example.esliv.dotpicktr.persistence.GridContract;
+import com.squareup.leakcanary.RefWatcher;
 
 /**
  * Created by esliv on 22/01/2018.
@@ -113,7 +115,12 @@ public class GalleryFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = DotPicktApplication.getRefWatcher(getActivity());
+        refWatcher.watch(this);
+    }
 
 
 }
