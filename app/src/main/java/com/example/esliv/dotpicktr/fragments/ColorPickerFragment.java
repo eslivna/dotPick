@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -21,13 +20,17 @@ public class ColorPickerFragment extends Fragment {
     public final static String ARG_COLOR = "color";
     int currentColor = -1;
 
+    public interface ColorPickerFragmentListener{
+        void updateColor(int color);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         if (savedInstanceState != null) {
             currentColor = savedInstanceState.getInt(ARG_COLOR);
         }
-        View v = inflater.inflate(R.layout.activity_color, container, false);
+        View v = inflater.inflate(R.layout.fragment_color_picker, container, false);
         seekBarR = v.findViewById(R.id.seekBarR);
         seekBarB = v.findViewById(R.id.seekBarB);
         seekBarG = v.findViewById(R.id.seekBarG);
@@ -38,6 +41,7 @@ public class ColorPickerFragment extends Fragment {
 
         rgbValue = v.findViewById(R.id.rgbView);
 
+        final ColorPickerFragmentListener listener = (ColorPickerFragmentListener) getActivity();
 
         seekBarR.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -54,6 +58,7 @@ public class ColorPickerFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                 listener.updateColor(getCurrentColor());
             }
         });
 
@@ -72,6 +77,7 @@ public class ColorPickerFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                listener.updateColor(getCurrentColor());
             }
         });
 
@@ -90,6 +96,7 @@ public class ColorPickerFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                listener.updateColor(getCurrentColor());
             }
         });
 

@@ -1,4 +1,4 @@
-package com.example.esliv.dotpicktr.activities;
+package com.example.esliv.dotpicktr.activities.views;
 
 import android.content.Context;
 import android.graphics.Canvas;

@@ -13,4 +13,5 @@
     <string name="take_a_picture">Take a picture</string>
     <string name="title_activity_create">CreateActivity</string>
     <string name="no_items">No items have been created yet</string>
+    <string name="camera">Camera</string>
 </resources>

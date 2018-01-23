@@ -3,15 +3,13 @@ package com.example.esliv.dotpicktr.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.example.esliv.dotpicktr.DotPicktApplication;
 import com.example.esliv.dotpicktr.R;
-import com.example.esliv.dotpicktr.activities.Board;
+import com.example.esliv.dotpicktr.activities.views.Board;
 import com.example.esliv.dotpicktr.models.Grid;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -35,7 +33,7 @@ public class BoardFragment extends Fragment {
 
     public void setGrid(Grid grid) {
         this.grid = grid;
-
+        grid.setDrawGridLines(true);
     }
 
     public void redrawCanvas() {

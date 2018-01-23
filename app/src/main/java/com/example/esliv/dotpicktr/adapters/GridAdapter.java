@@ -1,8 +1,6 @@
 package com.example.esliv.dotpicktr.adapters;
 
 import android.app.AlertDialog;
-import android.content.ContentProvider;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -14,22 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.esliv.dotpicktr.R;
-import com.example.esliv.dotpicktr.activities.Board;
-import com.example.esliv.dotpicktr.models.Grid;
 import com.example.esliv.dotpicktr.persistence.GridContract;
-import com.example.esliv.dotpicktr.persistence.QueryHandler;
 import com.example.esliv.dotpicktr.utils.BoardThumbnail;
 import com.example.esliv.dotpicktr.utils.CursorRecyclerAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.internal.Utils;
 
 /**
  * Created by esliv on 22/01/2018.

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -30,7 +31,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.example.esliv.dotpicktr.persistence.GridContract.GridEntry;
 import com.squareup.leakcanary.RefWatcher;
 
-public class MainActivity extends AppCompatActivity implements QueryHandler.AsyncQueryListener {
+public class MainActivity extends AppCompatActivity implements QueryHandler.AsyncQueryListener, ColorPickerFragment.ColorPickerFragmentListener {
     /**
      * The grid we are showing
      */
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game_view);
+        setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -75,17 +76,21 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
 
         }
 
-
-        // Check whether the activity is using the layout version with
-        // the fragment_container FrameLayout. If so, we must add the first fragment
-        if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
+        if (grid != null) {
+            displayBoardFragment();
+        }
+        if (findViewById(R.id.board_container) != null) {
+            FragmentManager manager = getSupportFragmentManager();
             if (grid != null) {
-                displayBoardFragment();
+                BoardFragment boardFragment = new BoardFragment();
+                manager.beginTransaction().replace(R.id.board_container, boardFragment).commit();
+                boardFragment.setGrid(grid);
             }
-
+            Bundle bundle = new Bundle();
+            bundle.putInt(ColorPickerFragment.ARG_COLOR, Color.BLACK);
+            ColorPickerFragment colorPickerFragment = new ColorPickerFragment();
+            colorPickerFragment.setArguments(bundle);
+            manager.beginTransaction().replace(R.id.tools_container, colorPickerFragment).commit();
         }
 
         mBottomNav.setOnNavigationItemSelectedListener(
@@ -94,21 +99,18 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_edit:
-                                if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof ColorPickerFragment) {
-                                    ColorPickerFragment colorPickerFragment = (ColorPickerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                                    grid.setPencilColor(colorPickerFragment.getCurrentColor());
-                                }
-                                switchToBoardFragment();
+                                displayBoardFragment();
                                 break;
                             case R.id.action_color:
-                                switchToColorPickerFragment();
+                                displayColorPickerFragment();
                                 break;
                             case R.id.action_visible:
                                 toggleGridLines();
                                 break;
 
-                            case R.id.action_revert:
-
+                            case R.id.action_picture:
+                                takePicture();
+                                break;
                         }
                         return true;
                     }
@@ -152,11 +154,9 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
         grid.setPencilColor(Color.BLACK);
     }
 
-
-    private void switchToBoardFragment() {
-        if (findViewById(R.id.fragment_container) == null) {
-//TODO
-        } else {
+    private void displayBoardFragment() {
+        if (findViewById(R.id.fragment_container) != null) {
+            //normal sized screen
             FragmentManager manager = getSupportFragmentManager();
             BoardFragment boardFragment = new BoardFragment();
             manager.beginTransaction().replace(R.id.fragment_container, boardFragment).commit();
@@ -164,18 +164,19 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
         }
     }
 
-    private void switchToColorPickerFragment() {
-        Bundle bundle = new Bundle();
-        bundle.putInt(ColorPickerFragment.ARG_COLOR, grid.getPencilColor());
-
+    private void displayColorPickerFragment() {
         if (findViewById(R.id.fragment_container) == null) {
-//TODO
+            //large screen landscape
         } else {
+            //normal
+            Bundle bundle = new Bundle();
+            bundle.putInt(ColorPickerFragment.ARG_COLOR, grid.getPencilColor());
             FragmentManager manager = getSupportFragmentManager();
             ColorPickerFragment colorPickerFragment = new ColorPickerFragment();
             colorPickerFragment.setArguments(bundle);
             manager.beginTransaction().replace(R.id.fragment_container, colorPickerFragment).commit();
         }
+
     }
 
     private void clearCanvas() {
@@ -220,9 +221,19 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        saveGrid();
+        super.onSaveInstanceState(outState, outPersistentState);
+
+    }
+
     private void redrawCanvas() {
         if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof BoardFragment) {
             BoardFragment boardFragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            boardFragment.redrawCanvas();
+        } else if (getSupportFragmentManager().findFragmentById(R.id.board_container) instanceof BoardFragment) {
+            BoardFragment boardFragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.board_container);
             boardFragment.redrawCanvas();
         }
     }
@@ -232,6 +243,9 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
         startActivity(intent);
     }
 
+    /**
+     * Saves the Grid in the database
+     */
     private void saveGrid() {
         QueryHandler queryHandler = new QueryHandler(getApplicationContext(), null);
 
@@ -255,14 +269,6 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
     }
 
 
-    private void displayBoardFragment() {
-        FragmentManager manager = getSupportFragmentManager();
-        BoardFragment boardFragment = new BoardFragment();
-        manager.beginTransaction().replace(R.id.fragment_container, boardFragment).commit();
-        boardFragment.setGrid(grid);
-    }
-
-
     @Override
     public void onQueryComplete(int token, Object cookie, Cursor cursor) {
         if (cursor != null && cursor.getCount() == 1 && cursor.moveToFirst()) {
@@ -277,9 +283,22 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
             grid = new Grid(id, name, pencilColor, board, size, Boolean.parseBoolean(gridLines));
             cursor.close();
         }
+        if (findViewById(R.id.board_container) != null && grid != null) {
+            FragmentManager manager = getSupportFragmentManager();
+            BoardFragment boardFragment = new BoardFragment();
+            manager.beginTransaction().replace(R.id.board_container, boardFragment).commit();
+            boardFragment.setGrid(grid);
+        }
         displayBoardFragment();
     }
 
+    /**
+     * Converts the grid from string to a double array
+     *
+     * @param gridString The grid in String format ex: 1,1,1,1,1,1,1,1,1
+     * @param size       The size of the the grid
+     * @return A 2D array of int
+     */
     private int[][] getGrid(String gridString, int size) {
         int[][] result = new int[size][size];
         String[] array = gridString.split(",");
@@ -298,5 +317,10 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
         super.onDestroy();
         RefWatcher refWatcher = DotPicktApplication.getRefWatcher(this);
         refWatcher.watch(this);
+    }
+
+    @Override
+    public void updateColor(int color) {
+        grid.setPencilColor(color);
     }
 }
