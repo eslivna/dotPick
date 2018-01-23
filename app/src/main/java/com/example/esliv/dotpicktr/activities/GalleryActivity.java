@@ -22,7 +22,7 @@ import com.squareup.leakcanary.RefWatcher;
 
 import butterknife.BindView;
 
-public class CreateActivity extends AppCompatActivity implements AddGridDialogFragment.OnSelectionClickListener, GalleryFragment.GalleryFragmentListener ,GridAdapter.OnEditClickListener{
+public class GalleryActivity extends AppCompatActivity implements AddGridDialogFragment.OnSelectionClickListener, GalleryFragment.GalleryFragmentListener ,GridAdapter.OnEditClickListener{
 
     public static String ARG_SIZE = "size";
 
@@ -30,7 +30,7 @@ public class CreateActivity extends AppCompatActivity implements AddGridDialogFr
     RecyclerView recyclerView;
 
 
-    public CreateActivity() {
+    public GalleryActivity() {
     }
 
     @Override

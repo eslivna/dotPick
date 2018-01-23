@@ -1,7 +1,6 @@
 package com.example.esliv.dotpicktr.fragments;
 
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,8 +18,6 @@ import android.view.ViewGroup;
 
 import com.example.esliv.dotpicktr.DotPicktApplication;
 import com.example.esliv.dotpicktr.R;
-import com.example.esliv.dotpicktr.activities.CreateActivity;
-import com.example.esliv.dotpicktr.activities.MainActivity;
 import com.example.esliv.dotpicktr.adapters.GridAdapter;
 import com.example.esliv.dotpicktr.persistence.GridContract;
 import com.squareup.leakcanary.RefWatcher;
