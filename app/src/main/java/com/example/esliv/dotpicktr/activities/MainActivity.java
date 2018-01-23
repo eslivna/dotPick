@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(CreateActivity.ARG_SIZE)) {
-            size = intent.getIntExtra(CreateActivity.ARG_SIZE, 0);
+        if (intent.hasExtra(GalleryActivity.ARG_SIZE)) {
+            size = intent.getIntExtra(GalleryActivity.ARG_SIZE, 0);
             initBoard(size);
         } else {
             Bundle bundle = intent.getExtras();
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements QueryHandler.Asyn
     }
 
     private void switchToGallery() {
-        Intent intent = new Intent(this, CreateActivity.class);
+        Intent intent = new Intent(this, GalleryActivity.class);
         startActivity(intent);
     }
 
